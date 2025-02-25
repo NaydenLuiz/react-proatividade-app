@@ -1,0 +1,6 @@
+@Proatividade.API_HostAddress = http://localhost:5047
+
+GET {{Proatividade.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
