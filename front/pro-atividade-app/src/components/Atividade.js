@@ -4,12 +4,10 @@ export default function Atividade(props)
 {
     function prioridadeLabel(param) {
         switch (param) {
-            case "1":
-                return "baixa";
-            case "2":
-                return "Normal";
-            case "3":
-                return "Alta";
+            case "Baixa":
+            case "Normal":
+            case "Alta":
+                return param;
             default:
                 return "Não Definido";
         }
