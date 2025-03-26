@@ -31,18 +31,18 @@ namespace Proatividade.API.Controller
         }
 
         [HttpPost]
-        public IEnumerable<Atividade> Post(Atividade atividade)
+        public Atividade Post(Atividade atividade)
         {
             _context.Atividades.Add(atividade);
             if(_context.SaveChanges() > 0)
             {
-                return _context.Atividades;
+                return _context.Atividades.FirstOrDefault(s=>s.Id == atividade.Id);
             }
             
             throw new Exception("Não foi possível salvar a atividade");
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public Atividade Put(int id, Atividade atividade)
         {
             if(atividade.Id != id)
@@ -61,7 +61,7 @@ namespace Proatividade.API.Controller
         }
 
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public bool Delete(int Id)
         {
             var atividade = _context.Atividades.FirstOrDefault(x => x.Id == Id);
