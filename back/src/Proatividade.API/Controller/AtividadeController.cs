@@ -3,83 +3,108 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Proatividade.API.Data;
-using Proatividade.API.Models;
+using Proatividade.Data.Context;
+using Proatividade.Domain.Entities;
+using Proatividade.Domain.Interfaces.Services;
 
 namespace Proatividade.API.Controller
 {
+   
     [ApiController]
     [Route("api/[controller]")]
     public class AtividadeController : ControllerBase
     {
-        private readonly DataContext _context;
-        public AtividadeController(DataContext context)
+         private readonly IAtividadeService _atividadeService;
+        public AtividadeController(IAtividadeService atividadeService)
         {
-            _context = context;
+            _atividadeService = atividadeService;
         }
 
+
         [HttpGet]
-        public IEnumerable<Atividade> Get()
+        public async Task<IEnumerable<Atividade>> Get()
         {
-            return _context.Atividades;
+            try
+            {
+                return await _atividadeService.GetAllAtividadesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Não foi possível listar as atividades", ex);
+            }
         }
 
         [HttpGet("{id}")]
-        public Atividade Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            return _context.Atividades.FirstOrDefault(x => x.Id == id);
+            try
+            {
+                var atividade = await _atividadeService.GetByIdAtividadeAsync(id);
+                if(atividade == null)
+                {
+                    return NoContent();
+                }
+                return Ok(atividade);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("Não foi possível listar a atividade", ex);
+            }
         }
 
         [HttpPost]
-        public Atividade Post(Atividade atividade)
+        public async Task<IActionResult> Post(Atividade atividade)
         {
-            _context.Atividades.Add(atividade);
-            if(_context.SaveChanges() > 0)
+            var result = await _atividadeService.AddAtividade(atividade);
+            if(result == null)
             {
-                return _context.Atividades.FirstOrDefault(s=>s.Id == atividade.Id);
+                return NoContent();
             }
-            
-            throw new Exception("Não foi possível salvar a atividade");
+            return  Ok(result);
         }
 
         [HttpPut("{id}")]
-        public Atividade Put(int id, Atividade atividade)
+        public async Task<IActionResult> Put(int id, Atividade atividade)
         {
-            if(atividade.Id != id)
+            if(id != atividade.Id)
             {
-                throw new Exception("Você está tentando atualizar uma atividade que não existe");
+                return Conflict("Os ids não conferem");
             }
 
-            _context.Update(atividade);
+            var _atividade = await _atividadeService.GetByIdAtividadeAsync(id);
+            if(_atividade == null) return NoContent();
 
-            if(_context.SaveChanges() > 0)
+            try
             {
-                return _context.Atividades.FirstOrDefault(s=>s.Id == atividade.Id);
+                var result = await _atividadeService.UpdateAtividade(atividade);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("Não foi possível atualizar a atividade", ex);
             }
             
-            throw new Exception("Não foi possível salvar a atividade");
         }
 
 
         [HttpDelete("{id}")]
-        public bool Delete(int Id)
+        public async Task<IActionResult>Delete(int id)
         {
-            var atividade = _context.Atividades.FirstOrDefault(x => x.Id == Id);
-            if(atividade == null)
+            try
             {
-                throw new Exception("Você está tentando deletar uma atividade que não existe");
+                var atividade = await _atividadeService.GetByIdAtividadeAsync(id);
+                if(atividade == null) return NoContent();                
+                var result = await _atividadeService.DeleteAtividadeAsync(id);
+                if(result){
+                    return Ok("Atividade deletada com sucesso");
+                }else{
+                    return NoContent();
+                }
             }
-
-            _context.Remove(atividade);
-
-            if(_context.SaveChanges() > 0)
+            catch(Exception ex)
             {
-                return true;
-            }else{
-                return false;
+                throw new Exception("Não foi possível deletar a atividade", ex);
             }
-            
-            
         }
 
     }

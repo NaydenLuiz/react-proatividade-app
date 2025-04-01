@@ -1,7 +1,13 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
-using Proatividade.API.Data;
-
+using Proatividade.Data.Context;
+using Proatividade.Domain.Interfaces.Services;
+using Proatividade.Data.Repositories;
+using Proatividade.Domain.Services;
+using Proatividade.Domain.Interfaces.Repositories;
+using Proatividade.Domain.Entities;
+using Proatividade.Domain.Interfaces.Repositories;
+using Proatividade.Domain.Interfaces.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -27,6 +33,10 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ProatividadeContext")
 ));
+
+builder.Services.AddScoped<IAtividadeRepo, AtividadeRepo>();
+builder.Services.AddScoped<IGeralRepo, GeralRepo>();
+builder.Services.AddScoped<IAtividadeService, AtividadeService>();
 
 
 
