@@ -2,7 +2,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import {NavLink} from 'react-router-dom/cjs/react-router-dom.min';
+import {NavLink} from 'react-router-dom';
 
 
 function Menu() {
@@ -16,13 +16,13 @@ function Menu() {
             <Nav.Link
              as={NavLink}
              to="/clients/list"
-             activeClassName="active">
+             className={(navData)=> navData.isActive ? "active" : "" }>
               Clientes
             </Nav.Link>
             <Nav.Link
              as={NavLink}
              to="/atividades/list"
-             activeClassName="active">Atividades</Nav.Link>
+             className={(navData)=> navData.isActive ? "active" : "" }>Atividades</Nav.Link>
           </Nav>
           <Nav>
           <NavDropdown align="end" title="Nayden" id="basic-nav-dropdown">
